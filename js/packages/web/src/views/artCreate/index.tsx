@@ -940,7 +940,8 @@ const LaunchStep = (props: {
     props.attributes,
   );
   const files = props.files;
-  const metadata = props.attributes;
+  console.log('files', files);
+  const metadata = {...props.attributes, properties: {...props.attributes.properties, mern: "asasa"}};
   useEffect(() => {
     const rentCall = Promise.all([
       props.connection.getMinimumBalanceForRentExemption(MintLayout.span),

@@ -1,0 +1,11 @@
+POST https://damodharanjgithubio-damojay.vercel.app/api/serverless HTTP/1.1
+content-type: application/octet-stream
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="image"; filename="1.png"
+Content-Type: image/svg
+
+< ./beaver.svg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+

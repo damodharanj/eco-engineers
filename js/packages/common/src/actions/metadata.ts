@@ -83,6 +83,12 @@ export interface IMetadataExtension {
       address: string;
       shares: number;
     }[];
+    eeMeta?: {
+      name: string;
+      hitpoint: number;
+      intelpoint: number;
+      level: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
+    }
   };
 }
 
