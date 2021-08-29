@@ -92,7 +92,7 @@ export const EEView = () => {
     return <>
     <canvas style={{display: 'none'}} id="canvas"  width="500" height="500"></canvas>
     <Row style={{ paddingTop: 50 }}>
-        <Col span={11}>
+        {/* <Col span={11}>
             <Card style={{borderRadius: 10, margin: 10}}>
                 <div style={{display: 'flex', justifyContent: 'space-between'}}>
                     <h1>My Eco Engineers</h1>
@@ -101,10 +101,10 @@ export const EEView = () => {
                 
                 {[1,2,3,5].map(i => <Card style={{margin: 10}}>{i}</Card>)}
             </Card>
-        </Col>
-        <Col span={11} style={{borderRadius: 10, margin: 10}}>
+        </Col> */}
+        <Col span={24} style={{borderRadius: 10, margin: 10}}>
             <Row>
-                <Card>
+                <Card style={{width: '100%'}}>
                 <div style={{display: 'flex', justifyContent: 'space-between'}}>
                     <h1>Create New Eco Engineer</h1>
                     {plink ? <a href={plink} download="ee.png">Download</a> : ''}
