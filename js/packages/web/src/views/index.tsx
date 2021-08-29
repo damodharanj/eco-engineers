@@ -8,3 +8,4 @@ export { AuctionCreateView } from './auctionCreate';
 export { ArtworksView } from './artworks';
 export { AnalyticsView } from './analytics';
 export { EEView } from './ecoengineers';
+export { PlayView } from './play'
