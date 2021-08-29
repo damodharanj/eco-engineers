@@ -10,7 +10,8 @@ import {
   AuctionCreateView,
   AuctionView,
   HomeView,
-  EEView
+  EEView,
+  PlayView
 } from './views';
 import { AdminView } from './views/admin';
 import { BillingView } from './views/auction/billing';
@@ -59,6 +60,11 @@ export function Routes() {
               exact
               path="/ecoengineers"
               component={() => <EEView/>}
+            />
+            <Route
+              exact
+              path="/play"
+              component={() => <PlayView/>}
             />
             <Route path="/" component={() => <HomeView />} />
           </Switch>
