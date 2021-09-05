@@ -1,24 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col, Divider, Layout, Tag, Button, Skeleton, List, Card } from 'antd';
 import { useParams } from 'react-router-dom';
 import { useArt, useExtendedArt } from './../../hooks';
 
 import { ArtContent } from '../../components/ArtContent';
-import { shortenAddress, useConnection } from '@oyster/common';
+import { Data, sendTransaction, shortenAddress, TokenAccount, updateMetadata, useConnection, useUserAccounts } from '@oyster/common';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { MetaAvatar } from '../../components/MetaAvatar';
 import { sendSignMetadata } from '../../actions/sendSignMetadata';
 import { ViewOn } from './../../components/ViewOn';
 import { ArtType } from '../../types';
+import { PublicKey } from '@solana/web3.js';
 
 const { Content } = Layout;
 
 export const ArtView = () => {
   const { id } = useParams<{ id: string }>();
   const wallet = useWallet();
+  // const { accountByMint } = useUserAccounts();
 
   const connection = useConnection();
   const art = useArt(id);
+  console.log(art);
   let badge = '';
   if (art.type === ArtType.NFT) {
     badge = 'Unique';
@@ -29,12 +32,28 @@ export const ArtView = () => {
   }
   const { ref, data } = useExtendedArt(id);
 
-  // const { userAccounts } = useUserAccounts();
+  const { userAccounts } = useUserAccounts();
 
-  // const accountByMint = userAccounts.reduce((prev, acc) => {
-  //   prev.set(acc.info.mint.toBase58(), acc);
-  //   return prev;
-  // }, new Map<string, TokenAccount>());
+  const accountByMint = userAccounts.reduce((prev, acc) => {
+    prev.set(acc.info.mint.toBase58(), acc);
+    return prev;
+  }, new Map<string, TokenAccount>());
+
+  const [isCharacter, setIsCharacter] = useState(true);
+
+  useEffect(() => {
+    if (art.uri) {
+      fetch(art.uri)
+        .then((r) => r.json())
+        .then(r => {
+          console.log(r.properties)
+          if (r.properties.nftType) {
+            setIsCharacter(r.properties.nftType)
+          }
+          
+        });
+    }
+  });
 
   const description = data?.description;
   const attributes = data?.attributes;
@@ -98,6 +117,11 @@ export const ArtView = () => {
                 <ViewOn id={id} />
               </Col>
             </Row>
+            {
+              isCharacter ? <Row>
+                <h3>NFT Type: {typeof isCharacter === 'number' ? `powerup value ${isCharacter}` : isCharacter}</h3>
+              </Row> : ''
+            }
             <Row>
               <Col>
                 <h6 style={{ marginTop: 5 }}>Created By</h6>
@@ -156,7 +180,7 @@ export const ArtView = () => {
               </Col>
             </Row>
 
-            {/* <Button
+            <Button
                   onClick={async () => {
                     if(!art.mint) {
                       return;
@@ -168,19 +192,19 @@ export const ArtView = () => {
                       return;
                     }
 
-                    const owner = wallet.publicKey;
+                    const owner = wallet.publicKey?.toBase58();
 
                     if(!owner) {
                       return;
                     }
                     const instructions: any[] = [];
-                    await updateMetadata(undefined, undefined, true, mint, owner, instructions)
-
+                    await updateMetadata(undefined, undefined, true, mint.toString(), owner, instructions)
+                    // console.log('instructions', instructions, ndata, data);
                     sendTransaction(connection, wallet, instructions, [], true);
                   }}
                 >
                   Mark as Sold
-                </Button> */}
+                </Button>
           </Col>
           <Col span="12">
             <Divider />

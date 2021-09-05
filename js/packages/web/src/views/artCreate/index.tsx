@@ -14,6 +14,7 @@ import {
   Form,
   Typography,
   Space,
+  Select,
 } from 'antd';
 import { ArtCard } from './../../components/ArtCard';
 import { UserSearch, UserValue } from './../../components/UserSearch';
@@ -42,12 +43,16 @@ import { cleanName, getLast } from '../../utils/utils';
 import { AmountLabel } from '../../components/AmountLabel';
 import useWindowDimensions from '../../utils/layout';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { useUserArts } from '../../hooks';
 
+const { Option } = Select;
 const { Step } = Steps;
 const { Dragger } = Upload;
 const { Text } = Typography;
 
 export const ArtCreateView = () => {
+  const allMeta = useUserArts();
+
   const connection = useConnection();
   const { env } = useConnectionConfig();
   const wallet = useWallet();
@@ -105,6 +110,7 @@ export const ArtCreateView = () => {
       properties: {
         files: attributes.properties.files,
         category: attributes.properties?.category,
+        nftType: attributes.properties.nftType
       },
     };
     setStepsVisible(false);
@@ -120,6 +126,7 @@ export const ArtCreateView = () => {
       files,
       metadata,
       attributes.properties?.maxSupply,
+      allMeta
     );
     if (_nft) setNft(_nft);
     clearInterval(inte);
@@ -299,6 +306,8 @@ const UploadStep = (props: {
   );
   const [mainFile, setMainFile] = useState<File | undefined>(props.files?.[1]);
 
+  const [nftType, setNftType]: ['character' | 'powerup', any] = useState('character')
+
   const [customURL, setCustomURL] = useState<string>('');
   const [customURLErr, setCustomURLErr] = useState<string>('');
   const disableContinue = !coverFile || !!customURLErr;
@@ -452,15 +461,24 @@ const UploadStep = (props: {
         />
       </Form.Item>
       <Row>
+      <h3>Choose the type of NFT</h3>
+      <Select defaultValue={nftType} style={{ width: '100%' }} onChange={(e) => { setNftType(Math.ceil(Math.random() * 15));  }}>
+        <Option value="character">Character</Option>
+        <Option value="powerup">Power Up</Option>
+      </Select>
+      </Row>
+      <Row>
         <Button
           type="primary"
           size="large"
           disabled={disableContinue}
           onClick={() => {
+            console.log('nftType', nftType);
             props.setAttributes({
               ...props.attributes,
               properties: {
                 ...props.attributes.properties,
+                nftType: nftType,
                 files: [coverFile, mainFile, customURL]
                   .filter(f => f)
                   .map(f => {
@@ -477,8 +495,10 @@ const UploadStep = (props: {
                   }),
               },
               image: coverFile?.name || '',
+              
               animation_url: mainFile && mainFile.name,
             });
+            console.log('props.attributes', props.attributes);
             props.setFiles([coverFile, mainFile].filter(f => f) as File[]);
             props.confirm();
           }}

@@ -16,6 +16,7 @@ export enum ArtworkViewState {
   Metaplex = '0',
   Owned = '1',
   Created = '2',
+  EE = '3'
 }
 
 export const ArtworksView = () => {
@@ -32,19 +33,34 @@ export const ArtworksView = () => {
   };
 
   const items =
-    activeKey === ArtworkViewState.Owned
+    activeKey === ArtworkViewState.Owned || activeKey === ArtworkViewState.EE
       ? ownedMetadata.map(m => m.metadata)
       : activeKey === ArtworkViewState.Created
       ? createdMetadata
       : metadata;
 
   useEffect(() => {
+    getChars();
     if (connected) {
       setActiveKey(ArtworkViewState.Owned);
     } else {
       setActiveKey(ArtworkViewState.Metaplex);
     }
   }, [connected, setActiveKey]);
+  console.log('items', items)
+
+  const [gameItems, setGameItems]: [any, any] = useState([]);
+
+  const getChars = async () => {
+    // console.log(metadata.map(x => x.info.data.uri)); 
+    const x = await fetch('https://veiled-bustling-pint.glitch.me/nft', {method: 'POST', body: JSON.stringify({urls: metadata.map(x => x.info.data.uri).filter(x => x.indexOf('damo.js.org') === -1)})});
+    const z = await x.json();
+    setGameItems(z.index);
+
+    console.log('z...', z, items.filter((x, i) => gameItems.indexOf(i) !== -1));
+  }
+
+
 
   const artworkGrid = (
     <Masonry
@@ -53,7 +69,21 @@ export const ArtworksView = () => {
       columnClassName="my-masonry-grid_column"
     >
       {!isLoading
-        ? items.map((m, idx) => {
+        ? activeKey === ArtworkViewState.EE ? items.filter((x, i) => gameItems.indexOf(i) !== -1).map((m, idx) => {
+          const id = m.pubkey;
+          return (
+            <Link to={`/art/${id}`} key={idx}>
+              <h1></h1>
+              <ArtCard
+                key={id}
+                pubkey={m.pubkey}
+                preview={false}
+                height={250}
+                width={250}
+              />
+            </Link>
+          );
+        })  : items.map((m, idx) => {
             const id = m.pubkey;
             return (
               <Link to={`/art/${id}`} key={idx}>
@@ -98,6 +128,14 @@ export const ArtworksView = () => {
                 <TabPane
                   tab={<span className="tab-title">Created</span>}
                   key={ArtworkViewState.Created}
+                >
+                  {artworkGrid}
+                </TabPane>
+              )}
+              {connected && (
+                <TabPane
+                  tab={<span className="tab-title">Eco Engineers</span>}
+                  key={ArtworkViewState.EE}
                 >
                   {artworkGrid}
                 </TabPane>

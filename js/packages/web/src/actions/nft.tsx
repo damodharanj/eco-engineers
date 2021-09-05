@@ -73,6 +73,7 @@ export const mintNFT = async (
     attributes: metadata.attributes,
     external_url: metadata.external_url,
     properties: {
+      nftType: metadata.properties.nftType,
       ...metadata.properties,
       creators: metadata.creators?.map(creator => {
         return {
@@ -82,6 +83,7 @@ export const mintNFT = async (
       }),
     },
   };
+  console.log('metadataContent', metadataContent)
 
   const realFiles: File[] = [
     ...files,
@@ -121,6 +123,8 @@ export const mintNFT = async (
     signers,
   ).toBase58();
 
+  console.log('mintKey', mintKey)
+
   const recipientKey = (
     await findProgramAddress(
       [
@@ -147,6 +151,7 @@ export const mintNFT = async (
       uri: ' '.repeat(64), // size of url for arweave
       sellerFeeBasisPoints: metadata.sellerFeeBasisPoints,
       creators: metadata.creators,
+      nftType: metadata.properties.nftType,
     }),
     payerPublicKey,
     mintKey,
@@ -219,7 +224,8 @@ export const mintNFT = async (
     const updateSigners: Keypair[] = [];
 
     // TODO: connect to testnet arweave
-    const arweaveLink = `https://veiled-bustling-pint.glitch.me/nft?damo=${metadataFile.transactionId}`;
+    const arweaveLink = `https://arweave.net/${metadataFile.transactionId}`;
+    // const arweaveLink = `https://veiled-bustling-pint.glitch.me/nft?damo=${metadataFile.transactionId}`;
     await updateMetadata(
       new Data({
         name: metadata.name,
@@ -227,6 +233,7 @@ export const mintNFT = async (
         uri: arweaveLink,
         creators: metadata.creators,
         sellerFeeBasisPoints: metadata.sellerFeeBasisPoints,
+        nftType: metadata.properties.nftType,
       }),
       undefined,
       undefined,

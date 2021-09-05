@@ -84,6 +84,7 @@ export interface IMetadataExtension {
   seller_fee_basis_points: number;
 
   properties: {
+    nftType?: 'character' | 'powerup'
     files?: FileOrString[];
     category: MetadataCategory;
     maxSupply?: number;
@@ -218,6 +219,7 @@ export class Data {
     uri: string;
     sellerFeeBasisPoints: number;
     creators: Creator[] | null;
+    nftType: string
   }) {
     this.name = args.name;
     this.symbol = args.symbol;
@@ -506,6 +508,8 @@ export async function updateMetadata(
         toPublicKey(metadataProgramId),
       )
     )[0];
+  
+  console.log('metadataAccount', metadataAccount)
 
   const value = new UpdateMetadataArgs({
     data,
@@ -535,6 +539,8 @@ export async function updateMetadata(
       data: txnData,
     }),
   );
+
+  console.log('instructions', instructions);
 
   return metadataAccount;
 }
